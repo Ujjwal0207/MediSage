@@ -1,0 +1,10 @@
+python-multipart
+fastapi
+uvicorn
+PyPDF2
+langchain>=0.2.0
+langchain-community
+langchain-core
+langchain-google-genai
+google-generativeai
+faiss-cpu
