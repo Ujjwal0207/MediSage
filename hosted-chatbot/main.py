@@ -23,7 +23,7 @@ app.add_middleware(
 
 vectorstore = None
 
-@app.post("/upload/")
+@app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     global vectorstore
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -35,7 +35,7 @@ async def upload_file(file: UploadFile = File(...)):
     return {"message": "PDF uploaded and processed successfully."}
 
 
-@app.get("/query/")
+@app.get("/query")
 async def query_bot(query: str):
     if not vectorstore:
         return {"error": "No PDF uploaded yet."}

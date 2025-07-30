@@ -1,6 +1,8 @@
 from langchain_core.embeddings import Embeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # embeddings
 
@@ -8,7 +10,7 @@ class GeminiEmbedder(Embeddings):
     def __init__(self):
         self.embedder = GoogleGenerativeAIEmbeddings(
             model="models/embedding-001",
-            google_api_key=os.environ["GOOGLE_API_KEY"] 
+            api_key=os.getenv("GOOGLE_API_KEY") 
         )
 
     def embed_documents(self, texts):
