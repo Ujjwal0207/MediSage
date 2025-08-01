@@ -124,20 +124,15 @@ pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
 
-openapi: 3.0.3
-info:
-  title: MediSage
-  version: 1.0.0
-  description: |
-    ⚠️ **Disclaimer**
+⚠️ **Disclaimer**
 
-    This tool is for educational and informational purposes only.  
-    It is **not** a replacement for professional medical advice.  
-    Always consult a licensed doctor for medical decisions.
+This tool is for educational and informational purposes only.  
+It is **not** a replacement for professional medical advice.  
+Always consult a licensed doctor for medical decisions.
 
-    🤝 **Contributing**
+🤝 **Contributing**
 
-    Pull requests are welcome!  
-    If you’d like to improve the UI, add new functionality, or extend the triage logic — open an issue or PR.
+Pull requests are welcome!  
+If you’d like to improve the UI, add new functionality, or extend the triage logic — open an issue or PR.
 
 
