@@ -5,12 +5,17 @@ import uuid
 
 import google.generativeai as genai
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from google.generativeai import GenerativeModel
 from pydantic import BaseModel, Field
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
 
-from rag.loader import extract_text_from_pdf
+from rag.guards import validate_pdf_bytes, verify_api_key
+from rag.loader import PDFExtractionError, extract_text_from_pdf
 from rag.prompt_builder import build_prompt
 from rag.retriever import create_vectorstore, retrieve_relevant_docs
 from rag.safety import append_disclaimer, get_emergency_response, is_emergency_query
@@ -19,6 +24,10 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 app = FastAPI()
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,28 +53,40 @@ def validate_session_id(session_id: str) -> str:
 
 
 @app.post("/upload")
+@limiter.limit("5/minute")
 async def upload_file(
+    request: Request,
     file: UploadFile = File(...),
     x_session_id: str = Header(..., alias="X-Session-ID"),
+    _: None = Depends(verify_api_key),
 ):
     session_id = validate_session_id(x_session_id)
-    tmp_path = None
+    content = await file.read()
+    validate_pdf_bytes(content)
 
+    tmp_path = None
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            tmp.write(await file.read())
+            tmp.write(content)
             tmp_path = tmp.name
 
-        text = extract_text_from_pdf(tmp_path)
-        vectorstores[session_id] = create_vectorstore(text)
+        page_docs = extract_text_from_pdf(tmp_path)
+        vectorstores[session_id] = create_vectorstore(page_docs)
         return {"message": "PDF uploaded and processed successfully."}
+    except PDFExtractionError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     finally:
         if tmp_path and os.path.exists(tmp_path):
             os.unlink(tmp_path)
 
 
 @app.post("/query")
-async def query_bot(body: QueryRequest):
+@limiter.limit("20/minute")
+async def query_bot(
+    request: Request,
+    body: QueryRequest,
+    _: None = Depends(verify_api_key),
+):
     session_id = validate_session_id(body.session_id)
     vectorstore = vectorstores.get(session_id)
 

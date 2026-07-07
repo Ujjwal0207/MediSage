@@ -1,7 +1,13 @@
 python-multipart
+python-dotenv
 fastapi
 uvicorn
 PyPDF2
+pymupdf
+pdf2image
+pytesseract
+Pillow
+slowapi
 langchain>=0.2.0
 langchain-community
 langchain-core

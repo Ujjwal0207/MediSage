@@ -2,7 +2,9 @@ from rag.safety import MEDICAL_DISCLAIMER
 
 
 def build_prompt(query: str, docs) -> str:
-    context = "\n\n".join([doc.page_content for doc in docs])
+    context = "\n\n".join(
+        f"[Page {doc.metadata.get('page', '?')}]\n{doc.page_content}" for doc in docs
+    )
 
     prompt = f"""
 You are a helpful medical report assistant. Your role is to explain lab results and report content in plain language — not to diagnose.
