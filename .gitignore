@@ -12,4 +12,5 @@ node_modules/
 # General
 *.log
 .DS_Store
+details
 
