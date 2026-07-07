@@ -1,8 +1,11 @@
+from pathlib import Path
+import os
+
+from dotenv import load_dotenv
 from langchain_core.embeddings import Embeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-import os
-from dotenv import load_dotenv
-load_dotenv()
+
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 
 # embeddings
 

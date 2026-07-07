@@ -2,6 +2,7 @@
 import os
 import tempfile
 import uuid
+from pathlib import Path
 
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -20,7 +21,7 @@ from rag.prompt_builder import build_prompt
 from rag.retriever import create_vectorstore, retrieve_relevant_docs
 from rag.safety import append_disclaimer, get_emergency_response, is_emergency_query
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 app = FastAPI()

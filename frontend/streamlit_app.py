@@ -7,9 +7,19 @@ import streamlit as st
 API_BASE = os.getenv("MEDISAGE_API_URL", "https://medisage-51pi.onrender.com")
 
 
+def get_api_key() -> str:
+    api_key = os.getenv("MEDISAGE_API_KEY", "")
+    if api_key:
+        return api_key
+    try:
+        return st.secrets.get("MEDISAGE_API_KEY", "")
+    except (FileNotFoundError, KeyError):
+        return ""
+
+
 def build_headers() -> dict[str, str]:
     headers = {"X-Session-ID": st.session_state.session_id}
-    api_key = os.getenv("MEDISAGE_API_KEY") or st.secrets.get("MEDISAGE_API_KEY", "")
+    api_key = get_api_key()
     if api_key:
         headers["X-API-Key"] = api_key
     return headers
