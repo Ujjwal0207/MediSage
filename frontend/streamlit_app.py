@@ -6,6 +6,8 @@ import streamlit as st
 
 API_BASE = os.getenv("MEDISAGE_API_URL", "https://medisage-51pi.onrender.com")
 
+st.set_page_config(page_title="MediSage AI", page_icon="🩺", layout="centered")
+
 
 def get_api_key() -> str:
     api_key = os.getenv("MEDISAGE_API_KEY", "")
@@ -31,8 +33,6 @@ if "session_id" not in st.session_state:
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-st.set_page_config(page_title="MediSage AI", page_icon="🩺", layout="centered")
-
 st.title("🩺 MediSage AI Medical Assistant")
 st.markdown("Upload your *PDF medical report* and ask any health-related question.")
 
@@ -44,13 +44,18 @@ with st.expander("📄 Upload Medical Report", expanded=True):
                 f"{API_BASE}/upload",
                 files={"file": uploaded_file},
                 headers=build_headers(),
+                timeout=60,
             )
         if res.ok:
             st.success("✅ File uploaded and processed successfully.")
             st.session_state.chat_history = []
         else:
-            payload = res.json()
-            detail = payload.get("detail", "Failed to upload. Try again.")
+            try:
+                payload = res.json()
+                detail = payload.get("detail", "Failed to upload. Try again.")
+            except Exception:
+                detail = "Server error or cold start. Please try again."
+                payload = {}
             if isinstance(detail, list):
                 detail = detail[0].get("msg", str(detail)) if detail else "Failed to upload."
             st.error(f"❌ {detail}")
@@ -64,9 +69,14 @@ if user_input:
             f"{API_BASE}/query",
             json={"session_id": st.session_state.session_id, "query": user_input},
             headers=build_headers(),
+            timeout=60,
         )
 
-    payload = res.json()
+    try:
+        payload = res.json()
+    except Exception:
+        payload = {"error": "Server error or cold start. Please try again."}
+
     if res.ok and "response" in payload:
         ai_response = payload["response"]
         st.session_state.chat_history.append(("You", user_input))
