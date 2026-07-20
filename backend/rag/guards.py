@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from fastapi import Header, HTTPException
 
@@ -7,7 +8,7 @@ MEDISAGE_API_KEY = os.getenv("MEDISAGE_API_KEY")
 PDF_MAGIC = b"%PDF"
 
 
-def verify_api_key(x_api_key: str | None = Header(default=None, alias="X-API-Key")) -> None:
+def verify_api_key(x_api_key: Optional[str] = Header(default=None, alias="X-API-Key")) -> None:
     if not MEDISAGE_API_KEY:
         return
     if not x_api_key or x_api_key != MEDISAGE_API_KEY:
