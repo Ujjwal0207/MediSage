@@ -419,6 +419,8 @@ MediSage has gone through two major hardening passes:
 | Retrieval | MMR search with 8 diverse chunks (was 3 similar chunks) |
 | Documentation | README aligned with actual stack (Gemini 1.5 Flash, Google embeddings) |
 
+**Curious about the RAG math?** Read our [Medical RAG Benchmarks](benchmarks.md) to see exactly why `1200/200` chunking and `MMR k=8` outperforms naive retrieval on complex lab reports.
+
 ---
 
 ## Roadmap
