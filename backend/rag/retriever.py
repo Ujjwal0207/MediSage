@@ -24,6 +24,12 @@ def create_vectorstore(page_docs: list[Document]):
     return FAISS.from_documents(chunks, get_embedder())
 
 
+def add_to_vectorstore(vectorstore: FAISS, page_docs: list[Document]):
+    splitter = _build_splitter()
+    chunks = splitter.split_documents(page_docs)
+    vectorstore.add_documents(chunks)
+
+
 def retrieve_relevant_docs(query: str, vectorstore, k: int = RETRIEVAL_K):
     return vectorstore.max_marginal_relevance_search(
         query,
