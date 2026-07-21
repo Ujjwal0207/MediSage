@@ -18,7 +18,7 @@ from slowapi.util import get_remote_address
 from rag.guards import validate_pdf_bytes, verify_api_key
 from rag.loader import PDFExtractionError, extract_text_from_pdf
 from rag.prompt_builder import build_prompt
-from rag.retriever import create_vectorstore, retrieve_relevant_docs
+from rag.retriever import add_to_vectorstore, create_vectorstore, retrieve_relevant_docs
 from rag.safety import append_disclaimer, get_emergency_response, is_emergency_query
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
@@ -73,7 +73,10 @@ async def upload_file(
             tmp_path = tmp.name
 
         page_docs = extract_text_from_pdf(tmp_path)
-        vectorstores[session_id] = create_vectorstore(page_docs)
+        if session_id in vectorstores:
+            add_to_vectorstore(vectorstores[session_id], page_docs)
+        else:
+            vectorstores[session_id] = create_vectorstore(page_docs)
         return {"message": "PDF uploaded and processed successfully."}
     except PDFExtractionError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
