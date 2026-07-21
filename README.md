@@ -123,7 +123,7 @@ sequenceDiagram
     Guard->>Guard: Enforce max file size
 
     API->>Load: Extract text (PyPDF2 → PyMuPDF → OCR)
-    alt Extraction fails (&lt; 100 chars)
+    alt Extraction fails [under 100 chars]
         Load-->>API: PDFExtractionError
         API-->>ST: HTTP 422 + clear message
     else Extraction succeeds
