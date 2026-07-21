@@ -47,7 +47,7 @@ Millions of people receive lab results but struggle to understand them. MediSage
 1. **Extracting text** from uploaded medical PDFs (text-based, layout-heavy, or scanned).
 2. **Indexing the report** into a searchable vector store (FAISS + Google embeddings).
 3. **Retrieving relevant sections** when you ask a question (MMR search over report chunks).
-4. **Generating a plain-language answer** with Gemini 1.5 Flash, grounded in your report.
+4. **Generating a plain-language answer** with Gemini Flash (`gemini-flash-latest`), grounded in your report.
 5. **Applying safety guardrails** — emergency detection, no definitive diagnoses, mandatory disclaimers.
 
 **Typical questions MediSage can help with:**
@@ -75,14 +75,14 @@ flowchart TB
 
     subgraph RAG["RAG Pipeline"]
         L["loader.py<br/>PyPDF2 → PyMuPDF → OCR"]
-        E["embedder.py<br/>Google embedding-001"]
+        E["embedder.py<br/>Google gemini-embedding-2"]
         R["retriever.py<br/>FAISS + MMR k=8"]
         P["prompt_builder.py"]
         S["safety.py<br/>emergency · disclaimer"]
     end
 
     subgraph External["External Services"]
-        GEM["Google Gemini 1.5 Flash"]
+        GEM["Google Gemini Flash"]
     end
 
     subgraph Store["Session Store (in-memory)"]
@@ -143,7 +143,7 @@ sequenceDiagram
     participant API as FastAPI Backend
     participant Safe as safety.py
     participant Ret as retriever.py
-    participant LLM as Gemini 1.5 Flash
+    participant LLM as Gemini Flash
 
     User->>ST: Type medical question
     ST->>API: POST /query<br/>{ session_id, query }
@@ -169,8 +169,8 @@ sequenceDiagram
 |-------|------------|---------|
 | Frontend | [Streamlit](https://streamlit.io/) | Upload UI, chat interface, session management |
 | Backend | [FastAPI](https://fastapi.tiangolo.com/) | REST API, validation, middleware |
-| LLM | Gemini 1.5 Flash | Plain-language medical explanations |
-| Embeddings | Google `embedding-001` | Vector encoding for RAG |
+| LLM | Gemini Flash (`gemini-flash-latest`) | Plain-language medical explanations |
+| Embeddings | Google `gemini-embedding-2` | Vector encoding for RAG |
 | Vector DB | FAISS | Similarity search over report chunks |
 | Retrieval | MMR (Max Marginal Relevance) | Diverse, relevant chunk selection |
 | PDF parsing | PyPDF2, PyMuPDF, Tesseract OCR | Text + layout + scanned PDF support |
@@ -417,7 +417,7 @@ MediSage has gone through two major hardening passes:
 | Empty PDF handling | HTTP 422 error when extraction yields too little text |
 | Chunking | Increased to 1200 chars / 200 overlap with page metadata preserved |
 | Retrieval | MMR search with 8 diverse chunks (was 3 similar chunks) |
-| Documentation | README aligned with actual stack (Gemini 1.5 Flash, Google embeddings) |
+| Documentation | README aligned with actual stack (`gemini-flash-latest`, `gemini-embedding-2`) |
 
 **Curious about the RAG math?** Read our [Medical RAG Benchmarks](benchmarks.md) to see exactly why `1200/200` chunking and `MMR k=8` outperforms naive retrieval on complex lab reports.
 
