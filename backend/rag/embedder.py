@@ -12,7 +12,7 @@ load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 class GeminiEmbedder(Embeddings):
     def __init__(self):
         self.embedder = GoogleGenerativeAIEmbeddings(
-            model="models/embedding-001",
+            model="models/gemini-embedding-2",
             api_key=os.getenv("GOOGLE_API_KEY") 
         )
 

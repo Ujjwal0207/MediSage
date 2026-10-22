@@ -47,7 +47,7 @@ Millions of people receive lab results but struggle to understand them. MediSage
 1. **Extracting text** from uploaded medical PDFs (text-based, layout-heavy, or scanned).
 2. **Indexing the report** into a searchable vector store (FAISS + Google embeddings).
 3. **Retrieving relevant sections** when you ask a question (MMR search over report chunks).
-4. **Generating a plain-language answer** with Gemini Flash (`gemini-flash-latest`), grounded in your report.
+4. **Generating a plain-language answer** with Gemini Flash (`gemini-3.8-flash`), grounded in your report.
 5. **Applying safety guardrails** — emergency detection, no definitive diagnoses, mandatory disclaimers.
 
 **Typical questions MediSage can help with:**
@@ -169,7 +169,7 @@ sequenceDiagram
 |-------|------------|---------|
 | Frontend | [Streamlit](https://streamlit.io/) | Upload UI, chat interface, session management |
 | Backend | [FastAPI](https://fastapi.tiangolo.com/) | REST API, validation, middleware |
-| LLM | Gemini Flash (`gemini-flash-latest`) | Plain-language medical explanations |
+| LLM | Gemini Flash (`gemini-3.8-flash`) | Plain-language medical explanations |
 | Embeddings | Google `gemini-embedding-2` | Vector encoding for RAG |
 | Vector DB | FAISS | Similarity search over report chunks |
 | Retrieval | MMR (Max Marginal Relevance) | Diverse, relevant chunk selection |
@@ -417,7 +417,7 @@ MediSage has gone through two major hardening passes:
 | Empty PDF handling | HTTP 422 error when extraction yields too little text |
 | Chunking | Increased to 1200 chars / 200 overlap with page metadata preserved |
 | Retrieval | MMR search with 8 diverse chunks (was 3 similar chunks) |
-| Documentation | README aligned with actual stack (`gemini-flash-latest`, `gemini-embedding-2`) |
+| Documentation | README aligned with actual stack (`gemini-3.8-flash`, `gemini-embedding-2`) |
 
 **Curious about the RAG math?** Read our [Medical RAG Benchmarks](benchmarks.md) to see exactly why `1200/200` chunking and `MMR k=8` outperforms naive retrieval on complex lab reports.
 

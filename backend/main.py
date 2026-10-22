@@ -104,7 +104,7 @@ async def query_bot(
     docs = retrieve_relevant_docs(body.query, vectorstore)
     prompt = build_prompt(body.query, docs)
 
-    model = GenerativeModel("models/gemini-1.5-flash")
+    model = GenerativeModel("models/gemini-3.8-flash")
     chat = model.start_chat()
     response = chat.send_message(prompt)
 
